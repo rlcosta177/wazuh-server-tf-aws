@@ -1,4 +1,4 @@
-> connecting to the server via ssh(windows, havent tested it on linux) #
+connecting to the server via ssh(windows, havent tested it on linux)
    ssh -i (path_to_PEM_file) machine_username@machine_ip
 ex ssh -i C:\Users\username\Documents\aws_keys/key.pem ubuntu@44.39.157.290 :rage3:                                     
 
