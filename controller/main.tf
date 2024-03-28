@@ -19,20 +19,53 @@ resource "aws_instance" "wazuh_server" {
 
 }
 
-resource "aws_ebs_volume" "wazuh_vol1" {
+resource "aws_instance" "wazuh_client" {
+    ami = "ami-080e1f13689e07408"
+    instance_type = "t2.micro"
+    availability_zone = "us-east-1c"
+    #key_name = "easter-terraform-aws-key"
+    
+    network_interface {
+        device_index = 0 #meaning the 'web-server-nic' will be the 1st one(kinda like the primary NIC)
+        network_interface_id = aws_network_interface.web-client-nic.id #have to specify the id of the NIC
+    }
+
+    tags = {
+        Name = "wazuh_client"
+    }
+
+}
+
+resource "aws_ebs_volume" "wazuh_vol_server1" {
   availability_zone = "us-east-1c"
   size              = 30
   type              = "gp2"
 
   tags = {
-    Name = "wazuh_vol1"
+    Name = "wazuh_vol_server1"
   }
 }
 
 resource "aws_volume_attachment" "wazuh_volinst_assoc" {
   device_name = "/dev/sdh"
-  volume_id   = aws_ebs_volume.wazuh_vol1.id
+  volume_id   = aws_ebs_volume.wazuh_vol_server1.id
   instance_id = aws_instance.wazuh_server.id
+}
+
+resource "aws_ebs_volume" "wazuh_vol_client1" {
+  availability_zone = "us-east-1c"
+  size              = 30
+  type              = "gp2"
+
+  tags = {
+    Name = "wazuh_vol_client1"
+  }
+}
+
+resource "aws_volume_attachment" "wazuh_volinst_assoc" {
+  device_name = "/dev/sdh"
+  volume_id   = aws_ebs_volume.wazuh_vol_client1.id
+  instance_id = aws_instance.wazuh_client.id
 }
 
 resource "aws_vpc" "wazuh_vpc" {
@@ -133,13 +166,30 @@ resource "aws_network_interface" "web-server-nic" {
     security_groups = [aws_security_group.allow-home-traffic.id]
 }
 
-resource "aws_eip" "wazuh-eip" {
+resource "aws_eip" "wazuh-server-eip" {
   domain                    = "vpc"
   network_interface         = aws_network_interface.web-server-nic.id
   associate_with_private_ip = "10.0.0.50" #has to be the same as in the aws_network_interface
   depends_on = [aws_internet_gateway.gw] #here we reference the whole object and not just the ID
 
   tags = {
-    Name = "wazuh-eip"
+    Name = "wazuh-server-eip"
+  }
+}
+
+resource "aws_network_interface" "web-client-nic" {
+    subnet_id = aws_subnet.wazuh_subnet.id
+    private_ips = ["10.0.0.51"]
+    security_groups = [aws_security_group.allow-home-traffic.id]
+}
+
+resource "aws_eip" "wazuh-client-eip" {
+  domain                    = "vpc"
+  network_interface         = aws_network_interface.web-client-nic.id
+  associate_with_private_ip = "10.0.0.51" #has to be the same as in the aws_network_interface
+  depends_on = [aws_internet_gateway.gw] #here we reference the whole object and not just the ID
+
+  tags = {
+    Name = "wazuh-client-eip"
   }
 }
