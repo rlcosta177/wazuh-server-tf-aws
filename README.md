@@ -16,4 +16,4 @@ I can add the public key of any key-pair(could be the one generated with ssh-key
     
 https://stackoverflow.com/questions/20840012/ssh-remote-host-identification-has-changed <- remove a known host from the 'known_hosts' file 
 
-who -a <- check current active ssh connections and probably other stuff
+who -l <- check logged in users(including ssh ofc), man who for more info
