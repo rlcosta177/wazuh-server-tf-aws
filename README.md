@@ -1,6 +1,6 @@
-# connecting to the server via ssh(windows, havent tested it on linux) #
+> connecting to the server via ssh(windows, havent tested it on linux) #
 
-> ssh -i (path_to_PEM_file) machine_username@machine_ip
+>> ssh -i (path_to_PEM_file) machine_username@machine_ip
               |                      |              |
               |                      |              |
               |                      |              |
