@@ -7,7 +7,7 @@ resource "aws_instance" "wazuh_server" {
     instance_type = "t2.medium"
     availability_zone = "us-east-1c"
     key_name = "easter-terraform-aws-key"
-    
+    depends_on = [aws_eip.wazuh-server-eip]
     network_interface {
         device_index = 0 #meaning the 'web-server-nic' will be the 1st one(kinda like the primary NIC)
         network_interface_id = aws_network_interface.web-server-nic.id #have to specify the id of the NIC
@@ -23,7 +23,8 @@ resource "aws_instance" "wazuh_client" {
     ami = "ami-080e1f13689e07408"
     instance_type = "t2.micro"
     availability_zone = "us-east-1c"
-    #key_name = "easter-terraform-aws-key"
+    key_name = "easter-terraform-aws-key"
+    depends_on = [aws_eip.wazuh-client-eip]
     
     network_interface {
         device_index = 0 #meaning the 'web-server-nic' will be the 1st one(kinda like the primary NIC)
@@ -46,7 +47,7 @@ resource "aws_ebs_volume" "wazuh_vol_server1" {
   }
 }
 
-resource "aws_volume_attachment" "wazuh_volinst_assoc" {
+resource "aws_volume_attachment" "wazuh_volinstserver_assoc" {
   device_name = "/dev/sdh"
   volume_id   = aws_ebs_volume.wazuh_vol_server1.id
   instance_id = aws_instance.wazuh_server.id
@@ -62,7 +63,7 @@ resource "aws_ebs_volume" "wazuh_vol_client1" {
   }
 }
 
-resource "aws_volume_attachment" "wazuh_volinst_assoc" {
+resource "aws_volume_attachment" "wazuh_volinstclient_assoc" {
   device_name = "/dev/sdh"
   volume_id   = aws_ebs_volume.wazuh_vol_client1.id
   instance_id = aws_instance.wazuh_client.id
@@ -156,7 +157,7 @@ resource "aws_security_group" "allow-home-traffic" {
     }
 
     tags = {
-        Name = "allow HTTP(S) and SSH"
+        Name = "wazuh_secgrp"
     }
 }
 
