@@ -1,6 +1,6 @@
 connecting to the server via ssh(windows, havent tested it on linux)
 
-ssh -i (path_to_PEM_file) machine_username@machine_ip
+ssh -i (path_to_private_PEM_file) machine_username@machine_ip
 
 ex ssh -i C:\Users\username\Documents\aws_keys/key.pem ubuntu@44.39.157.290 :rage3:                                     
 
@@ -16,4 +16,4 @@ I can add the public key of any key-pair(could be the one generated with ssh-key
     
 https://stackoverflow.com/questions/20840012/ssh-remote-host-identification-has-changed <- remove a known host from the 'known_hosts' file 
 
-who -a <- check current active ssh connections and probably other stuff
+who -l <- check logged in users(including ssh ofc), man who for more info
